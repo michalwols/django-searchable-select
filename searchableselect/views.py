@@ -6,6 +6,8 @@ except ImportError:
     from django.apps import apps
     get_model = apps.get_model
 
+from django.db.models.functions import Length
+
 # Python 3.x
 try:
     UNICODE_EXISTS = bool(type(unicode))
@@ -25,7 +27,11 @@ def filter_models(request):
 
     model = get_model(model_name)
 
-    values = model.objects.filter(**{'{}__icontains'.format(search_field): value})[:10]
+    values = (
+        model.objects
+            .annotate(**{search_field + '_length': Length(search_field)})
+            .filter(**{'{}__icontains'.format(search_field): value})
+            .order_by(search_field + '_length')[:20]
     values = [
         dict(pk=v.pk, name=unicode(v))
         for v
