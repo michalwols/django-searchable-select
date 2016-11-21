@@ -11,7 +11,7 @@ try:
     UNICODE_EXISTS = bool(type(unicode))
 except NameError:
     def unicode(s):
-        str(s)
+        return str(s)
 
 from django.http import JsonResponse
 from django.contrib.admin.views.decorators import staff_member_required
